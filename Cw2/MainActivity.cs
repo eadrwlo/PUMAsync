@@ -19,7 +19,7 @@ namespace Cw2
         ImageView imageView;
         ProgressBar progressBar;
         byte[] bytes;
-        Task downloadTask;
+        Bitmap bmForRestore;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -29,9 +29,8 @@ namespace Cw2
             var CounterText = FindViewById<EditText>(Resource.Id.CounterText);
             var CounterButton = FindViewById<Button>(Resource.Id.CounterButton);
             var downloadButton = FindViewById<Button>(Resource.Id.downloadButton);
-            var cancelButton = FindViewById<Button>(Resource.Id.cancelButton);
             downloadButton.Click += DownloadButtonAsync_Click;
-            cancelButton.Click += CancelButonClick;
+            
             urlTextBox = FindViewById<EditText>(Resource.Id.urlTextBox);
             imageView = FindViewById<ImageView>(Resource.Id.imageView);
             progressBar = FindViewById<ProgressBar>(Resource.Id.progressBar);
@@ -47,44 +46,51 @@ namespace Cw2
             };
         }
 
-        private void CancelButonClick(object sender, EventArgs e)
-        {
-            try
-            {
-                webClient.CancelAsync();
-            }
-            catch (System.Net.WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.RequestCanceled)
-                {
-
-                }
-
-            }
-        }
-
         protected override void OnSaveInstanceState(Bundle outState)
         {
             outState.PutInt("counter_Count", counter);
+            imageView.BuildDrawingCache();
+            bmForRestore = imageView.GetDrawingCache(false);
+            outState.PutParcelable("savedImage", bmForRestore);
             base.OnSaveInstanceState(outState);
         }
 
         protected override void OnRestoreInstanceState(Bundle savedState)
         {
             base.OnRestoreInstanceState(savedState);
+            imageView.SetImageBitmap(bmForRestore);
             counter = savedState.GetInt("counter_Count", 0);
         }
         private async void DownloadButtonAsync_Click(object sender, System.EventArgs e)
         {
-           // CancellationTokenSource token;
-           //var url = urlTextBox.Text;
-           // await DownloadImageAsync(url);
+            var url = urlTextBox.Text;
+            string buttonText = ((Button)sender).Text;
+            buttonText = buttonText.ToLower();
+            if (buttonText.Equals("pobierz"))
+            {
+                ((Button)sender).Text = "anuluj";
+                await DownloadImageAsync(url);  
+            }
+            else
+            {
+                webClient.CancelAsync();
+                ((Button)sender).Text = "pobierz";
+            }
         }
 
         private async Task DownloadImageAsync(string url)
         {
-            webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;   
-            bytes = await webClient.DownloadDataTaskAsync(url);
+            //System.Net.WebException: Request aborted
+            try
+            {
+                webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
+                bytes = await webClient.DownloadDataTaskAsync(url);
+            }
+            catch (System.Net.WebException ex)
+            {
+                return;
+            }
+            
             string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string localFilename = "downloaded.png";
             string localPath = System.IO.Path.Combine(documentsPath, localFilename);
@@ -103,8 +109,8 @@ namespace Cw2
 
         private void WebClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            progressBar.Progress = (int)(e.BytesReceived);
             progressBar.Max = (int)e.TotalBytesToReceive;
+            progressBar.Progress = (int)(e.BytesReceived);
         }
     }
 }

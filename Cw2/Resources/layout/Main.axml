@@ -24,12 +24,7 @@
         android:id="@+id/urlTextBox"
         android:text="https://static.pexels.com/photos/40142/new-york-skyline-manhattan-hudson-40142.jpeg" />
     <Button
-        android:text="ANULUJ"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/cancelButton" />
-    <Button
-        android:text="POBIERZ"
+        android:text="pobierz"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/downloadButton" />
