@@ -24,6 +24,11 @@
         android:id="@+id/urlTextBox"
         android:text="https://static.pexels.com/photos/40142/new-york-skyline-manhattan-hudson-40142.jpeg" />
     <Button
+        android:text="ANULUJ"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cancelButton" />
+    <Button
         android:text="POBIERZ"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +37,8 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="34.0dp"
-        android:id="@+id/progressBar" />
+        android:id="@+id/progressBar"
+        android:max="100" />
     <ImageView
         android:src="@android:drawable/ic_menu_gallery"
         android:layout_width="match_parent"

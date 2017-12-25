@@ -18,7 +18,8 @@ namespace Cw2
         EditText urlTextBox;
         ImageView imageView;
         ProgressBar progressBar;
-        Byte[] bytes;
+        byte[] bytes;
+        Task downloadTask;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -28,7 +29,9 @@ namespace Cw2
             var CounterText = FindViewById<EditText>(Resource.Id.CounterText);
             var CounterButton = FindViewById<Button>(Resource.Id.CounterButton);
             var downloadButton = FindViewById<Button>(Resource.Id.downloadButton);
+            var cancelButton = FindViewById<Button>(Resource.Id.cancelButton);
             downloadButton.Click += DownloadButtonAsync_Click;
+            cancelButton.Click += CancelButonClick;
             urlTextBox = FindViewById<EditText>(Resource.Id.urlTextBox);
             imageView = FindViewById<ImageView>(Resource.Id.imageView);
             progressBar = FindViewById<ProgressBar>(Resource.Id.progressBar);
@@ -44,6 +47,22 @@ namespace Cw2
             };
         }
 
+        private void CancelButonClick(object sender, EventArgs e)
+        {
+            try
+            {
+                webClient.CancelAsync();
+            }
+            catch (System.Net.WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.RequestCanceled)
+                {
+
+                }
+
+            }
+        }
+
         protected override void OnSaveInstanceState(Bundle outState)
         {
             outState.PutInt("counter_Count", counter);
@@ -57,16 +76,15 @@ namespace Cw2
         }
         private async void DownloadButtonAsync_Click(object sender, System.EventArgs e)
         {
-            var url = urlTextBox.Text;
-            await DownloadImageAsync(url);
+           // CancellationTokenSource token;
+           //var url = urlTextBox.Text;
+           // await DownloadImageAsync(url);
         }
 
         private async Task DownloadImageAsync(string url)
         {
-            Task<byte[]> task = webClient.DownloadDataTaskAsync(url);
-            updateProgressBar();
-            bytes = await task;
-            
+            webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;   
+            bytes = await webClient.DownloadDataTaskAsync(url);
             string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             string localFilename = "downloaded.png";
             string localPath = System.IO.Path.Combine(documentsPath, localFilename);
@@ -83,16 +101,11 @@ namespace Cw2
             fs.Close();
         }
 
-        void updateProgressBar()
+        private void WebClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            while (progressBar.Progress < 100)
-            {
-                progressBar.Progress += 1;
-            }
-                
+            progressBar.Progress = (int)(e.BytesReceived);
+            progressBar.Max = (int)e.TotalBytesToReceive;
         }
-
-
     }
 }
 
