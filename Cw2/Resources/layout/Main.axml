@@ -22,9 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/urlTextBox"
-        android:text="https://static.pexels.com/photos/40142/new-york-skyline-manhattan-hudson-40142.jpeg" />
+        android:text="https://www.thesun.co.uk/wp-content/uploads/2017/11/nintchdbpict000018979195.jpg?strip=all&amp;w=640" />
     <Button
-        android:text="pobierz"
+        android:text="Pobierz"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/downloadButton" />

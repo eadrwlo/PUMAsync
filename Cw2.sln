@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cw2", "Cw2\Cw2.csproj", "{3F174937-95B0-474F-A99F-7972F9A8A635}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncExample", "Cw2\AsyncExample.csproj", "{3F174937-95B0-474F-A99F-7972F9A8A635}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

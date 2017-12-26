@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Cw2
 {
-    [Activity(Label = "Cw2", MainLauncher = true)]
+    [Activity(Label = "Image Downloader", MainLauncher = true)]
     public class MainActivity : Activity
     {
         WebClient webClient = new WebClient();
@@ -34,11 +34,6 @@ namespace Cw2
             urlTextBox = FindViewById<EditText>(Resource.Id.urlTextBox);
             imageView = FindViewById<ImageView>(Resource.Id.imageView);
             progressBar = FindViewById<ProgressBar>(Resource.Id.progressBar);
-            //if (savedInstanceState != null )
-            //{
-            //    counter = savedInstanceState.GetInt("counter_Count", 0);
-            //}
-            CounterText.Text = counter.ToString();
             CounterButton.Click += (object sender, EventArgs e) =>
             {
                 counter++;
@@ -49,8 +44,6 @@ namespace Cw2
         protected override void OnSaveInstanceState(Bundle outState)
         {
             outState.PutInt("counter_Count", counter);
-            imageView.BuildDrawingCache();
-            bmForRestore = imageView.GetDrawingCache(false);
             outState.PutParcelable("savedImage", bmForRestore);
             base.OnSaveInstanceState(outState);
         }
@@ -58,6 +51,8 @@ namespace Cw2
         protected override void OnRestoreInstanceState(Bundle savedState)
         {
             base.OnRestoreInstanceState(savedState);
+            bmForRestore = (Bitmap)savedState.GetParcelable("savedImage");
+            
             imageView.SetImageBitmap(bmForRestore);
             counter = savedState.GetInt("counter_Count", 0);
         }
@@ -68,13 +63,13 @@ namespace Cw2
             buttonText = buttonText.ToLower();
             if (buttonText.Equals("pobierz"))
             {
-                ((Button)sender).Text = "anuluj";
+                ((Button)sender).Text = "Anuluj";
                 await DownloadImageAsync(url);  
             }
             else
             {
                 webClient.CancelAsync();
-                ((Button)sender).Text = "pobierz";
+                ((Button)sender).Text = "Pobierz";
             }
         }
 
@@ -102,8 +97,8 @@ namespace Cw2
             await BitmapFactory.DecodeFileAsync(localPath, options);
             options.InSampleSize = options.OutWidth > options.OutHeight ? options.OutHeight / imageView.Height : options.OutWidth / imageView.Width;
             options.InJustDecodeBounds = false;
-            Bitmap bitmap = await BitmapFactory.DecodeFileAsync(localPath, options);
-            imageView.SetImageBitmap(bitmap);
+            bmForRestore = await BitmapFactory.DecodeFileAsync(localPath, options);
+            imageView.SetImageBitmap(bmForRestore);
             fs.Close();
         }
 
